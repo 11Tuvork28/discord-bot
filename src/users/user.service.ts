@@ -7,26 +7,20 @@ export class UserService {
   constructor(@Inject(PrismaService) private database: PrismaService) {}
 
   async findOne(userId: number): Promise<User | undefined> {
-    return this.database.user.findUnique({
-      where: {
-        userId,
-      },
-    });
+    return this.database.user.findUnique({ where: { userId } });
   }
 
-  async createOne(userId: number, name: string): Promise<User> {
-    const user = this.findOne(userId);
-    return user
-      ? user
-      : await this.database.user.create({
-          data: {
-            userId,
-            name,
-            stats: {
-              create: {},
-            },
-          },
-        });
+  async findOrCrate(userId: number, name: string): Promise<User> {
+    const user = await this.findOne(userId);
+    if (user) return user;
+
+    await this.database.user.create({
+      data: { userId, name },
+    });
+    await this.database.stats.create({
+      data: { userId },
+    });
+    return this.findOne(userId);
   }
 
   async insertMessage(userId: number, messageId: number) {
@@ -42,30 +36,18 @@ export class UserService {
   }
   async incrementMessagePoints(value: number, userId: number) {
     this.database.stats.update({
-      where: {
-        userId,
-      },
-      data: {
-        message_points: { increment: 1 },
-      },
+      where: { userId },
+      data: { message_points: { increment: 1 } },
     });
   }
   async decrementMessagePoints(value: number, userId: number) {
     this.database.stats.update({
-      where: {
-        userId,
-      },
-      data: {
-        message_points: { decrement: 1 },
-      },
+      where: { userId },
+      data: { message_points: { decrement: 1 } },
     });
   }
   async deleteOne(userId: number): Promise<void> {
-    this.database.user.delete({
-      where: {
-        userId,
-      },
-    });
+    this.database.user.delete({ where: { userId } });
   }
   async findAll(): Promise<Array<User>> {
     return this.database.user.findMany();
@@ -75,9 +57,6 @@ export class UserService {
     throw new Error('Function not implemented.');
   }
   async isActive(user: User): Promise<boolean> {
-    throw new Error('Function not implemented.');
-  }
-  private async getStatsOrCreate(user_id: number) {
     throw new Error('Function not implemented.');
   }
 }

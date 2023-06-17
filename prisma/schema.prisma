@@ -28,7 +28,7 @@ model Stats {
 }
 
 model Message {
-  messageId   BigInt   @id
+  messageId   BigInt   @id @unique
   userId      BigInt
   stats       Stats?   @relation(fields: [userId], references: [userId])
   createdAt   DateTime
