@@ -27,7 +27,11 @@ export class UserService {
         });
   }
   private async createStats(user_id: number) {
-    throw new Error('Method not implemented.');
+    this.database.stats.create({
+      data: {
+        userId: user_id,
+      },
+    });
   }
 
   async insertMessage(user_id: number, message_id: number) {
@@ -60,7 +64,7 @@ export class UserService {
   async deleteOne(user_id: number): Promise<void> {
     this.database.user.delete({
       where: {
-        user_id,
+        userId: user_id,
       },
     });
   }
