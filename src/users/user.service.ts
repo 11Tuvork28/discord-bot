@@ -16,22 +16,17 @@ export class UserService {
 
   async createOne(user_id: number, name: string): Promise<User> {
     const user = this.findOne(user_id);
-    this.createStats(user_id);
     return user
       ? user
       : await this.database.user.create({
           data: {
-            user_id,
+            userId: user_id,
             name,
+            stats: {
+              create: {},
+            },
           },
         });
-  }
-  private async createStats(user_id: number) {
-    this.database.stats.create({
-      data: {
-        userId: user_id,
-      },
-    });
   }
 
   async insertMessage(user_id: number, message_id: number) {

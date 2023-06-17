@@ -14,13 +14,13 @@ model User {
   userId        BigInt     @id @unique
   name          String
   refresh_token String     @default("")
-  stats         Stats?
+  stats         Stats      @relation(fields: [userId], references: [userId])
   Messages      Messages[]
 }
 
 model Stats {
-  userId               BigInt   @id
-  user                 User     @relation(fields: [userId], references: [userId])
+  userId               BigInt   @id @unique
+  user                 User?
   last_message_sent    DateTime @default(now())
   last_online          DateTime @default(now())
   message_points       Float    @default(10.0)
@@ -28,10 +28,10 @@ model Stats {
 }
 
 model Messages {
-  id         BigInt    @id @default(autoincrement())
-  user_id    BigInt    @unique
-  user       User?     @relation(fields: [user_id], references: [userId])
-  message    Message[]
+  id      BigInt    @id @default(autoincrement())
+  user_id BigInt    @unique
+  user    User?     @relation(fields: [user_id], references: [userId])
+  message Message[]
 }
 
 model Message {
