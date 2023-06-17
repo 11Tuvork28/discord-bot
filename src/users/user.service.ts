@@ -9,18 +9,18 @@ export class UserService {
   async findOne(userId: number): Promise<User | undefined> {
     return this.database.user.findUnique({
       where: {
-        user_id: userId,
+        userId,
       },
     });
   }
 
-  async createOne(user_id: number, name: string): Promise<User> {
-    const user = this.findOne(user_id);
+  async createOne(userId: number, name: string): Promise<User> {
+    const user = this.findOne(userId);
     return user
       ? user
       : await this.database.user.create({
           data: {
-            userId: user_id,
+            userId,
             name,
             stats: {
               create: {},
@@ -29,37 +29,41 @@ export class UserService {
         });
   }
 
-  async insertMessage(user_id: number, message_id: number) {
-    await this.getStatsOrCreate(user_id);
+  async insertMessage(userId: number, messageId: number) {
+    this.database.message.create({
+      data: {
+        userId,
+        messageId,
+        createdAt: new Date(),
+      },
+    });
     // insert into this.datanase.messages with date.now(), message id userid, stats id
     throw new Error('Method not implemented.');
   }
-  async incrementMessagePoints(value: number, user_id: number) {
-    value += (await this.findOne(user_id)).message_points;
-    this.database.user.update({
+  async incrementMessagePoints(value: number, userId: number) {
+    this.database.stats.update({
       where: {
-        user_id,
+        userId,
       },
       data: {
-        message_points: value,
+        message_points: { increment: 1 },
       },
     });
   }
-  async decrementMessagePoints(value: number, user_id: number) {
-    value -= (await this.findOne(user_id)).message_points;
-    this.database.user.update({
+  async decrementMessagePoints(value: number, userId: number) {
+    this.database.stats.update({
       where: {
-        user_id,
+        userId,
       },
       data: {
-        message_points: value,
+        message_points: { decrement: 1 },
       },
     });
   }
-  async deleteOne(user_id: number): Promise<void> {
+  async deleteOne(userId: number): Promise<void> {
     this.database.user.delete({
       where: {
-        userId: user_id,
+        userId,
       },
     });
   }
