@@ -13,16 +13,20 @@ export class BotService {
   ) {}
 
   async markMemberInactive(user: User) {
-    this._addMemberToChannel(
-      user.user_id.toString(),
-      this.configService.get<string>(''),
-    );
+    this.configService
+      .get<string>('RESTRICTED_CHANNEL_IDS')
+      .split(',')
+      .forEach((channel_id) => {
+        this._addMemberToChannel(user.userId.toString(), channel_id);
+      });
   }
   async markMemberActive(user: User) {
-    this._removeMemberToChannel(
-      user.user_id.toString(),
-      this.configService.get<string>(''),
-    );
+    this.configService
+      .get<string>('RESTRICTED_CHANNEL_IDS')
+      .split(',')
+      .forEach((channel_id) => {
+        this._removeMemberToChannel(user.userId.toString(), channel_id);
+      });
   }
   private async _addMemberToChannel(user_id: string, channel_id: string) {
     await (

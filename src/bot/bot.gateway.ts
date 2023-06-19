@@ -16,7 +16,7 @@ export class BotGateway {
     const members = await this.client.guilds.cache.at(0).members.fetch();
     members.forEach(async (member: GuildMember) => {
       if (!member.user.bot)
-        await this.userService.findOrCrate(
+        await this.userService.findOrCreate(
           parseInt(member.id),
           member.user.username,
         );
@@ -25,7 +25,10 @@ export class BotGateway {
 
   @On('guildMemberAdd')
   async addMember(member: GuildMember) {
-    await this.userService.findOrCrate(parseInt(member.id), member.user.username);
+    await this.userService.findOrCreate(
+      parseInt(member.id),
+      member.user.username,
+    );
   }
 
   @On('guildMemberRemove')

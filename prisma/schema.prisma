@@ -13,7 +13,6 @@ datasource db {
 model User {
   userId        BigInt @id @unique
   name          String
-  refresh_token String @default("")
   stats         Stats  @relation(fields: [userId], references: [userId])
 }
 
@@ -23,13 +22,13 @@ model Stats {
   messages             Message[]
   last_message_sent    DateTime? @default(now())
   last_online          DateTime  @default(now())
-  message_points       Float     @default(10.0)
-  message_count_bucket Int       @default(0)
+  message_count_bucket Int       @default(30)
 }
 
 model Message {
   messageId   BigInt   @id @unique
   userId      BigInt
+  channelId   BigInt
   stats       Stats?   @relation(fields: [userId], references: [userId])
   createdAt   DateTime
   statsUserId BigInt?
